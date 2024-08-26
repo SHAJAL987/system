@@ -9,7 +9,7 @@ import { useTheme } from '@mui/material/styles';
  *
  */
 
-import logo from 'assets/images/auth0.png';
+import logo from 'assets/images/city-bank-logo.png';
 
 // ==============================|| LOGO SVG ||============================== //
 
@@ -18,7 +18,7 @@ const Logo = () => {
 
   return (
 
-    <img src={logo} alt="Mantis" width="100" />
+    <img src={logo} alt="Mantis" width="90" height="50"/>
 
     // <>
     //   <svg width="118" height="35" viewBox="0 0 118 35" fill="none" xmlns="http://www.w3.org/2000/svg">

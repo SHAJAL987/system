@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import Link from '@mui/material/Link';
@@ -10,30 +11,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
-// third-party
-import { NumericFormat } from 'react-number-format';
-
+import IconButton from '@mui/material/IconButton';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 // project import
 import Dot from 'components/@extended/Dot';
 
-function createData(tracking_no, name, fat, carbs, protein) {
-  return { tracking_no, name, fat, carbs, protein };
-}
-
-const rows = [
-  createData(84564564, 'Camera Lens', 40, 2, 40570),
-  createData(98764564, 'Laptop', 300, 0, 180139),
-  createData(98756325, 'Mobile', 355, 1, 90989),
-  createData(98652366, 'Handset', 50, 1, 10239),
-  createData(13286564, 'Computer Accessories', 100, 1, 83348),
-  createData(86739658, 'TV', 99, 0, 410780),
-  createData(13256498, 'Keyboard', 125, 2, 70999),
-  createData(98753263, 'Mouse', 89, 2, 10570),
-  createData(98753275, 'Desktop', 185, 1, 98063),
-  createData(98753291, 'Chair', 100, 0, 14001)
-];
-
+// Comparator functions
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -61,41 +45,15 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  {
-    id: 'tracking_no',
-    align: 'left',
-    disablePadding: false,
-    label: 'Tracking No.'
-  },
-  {
-    id: 'name',
-    align: 'left',
-    disablePadding: true,
-    label: 'Product Name'
-  },
-  {
-    id: 'fat',
-    align: 'right',
-    disablePadding: false,
-    label: 'Total Order'
-  },
-  {
-    id: 'carbs',
-    align: 'left',
-    disablePadding: false,
-
-    label: 'Status'
-  },
-  {
-    id: 'protein',
-    align: 'right',
-    disablePadding: false,
-    label: 'Total Amount'
-  }
+  { id: 'id', align: 'left', disablePadding: false, label: 'ID' },
+  { id: 'appName', align: 'left', disablePadding: true, label: 'Name' },
+  { id: 'appCode', align: 'left', disablePadding: false, label: 'Code' },
+  { id: 'appStatus', align: 'left', disablePadding: false, label: 'Status' },
+  { id: 'appUrl', align: 'left', disablePadding: false, label: 'URL' },
+  { id: 'action', align: 'right', disablePadding: false, label: 'Action' }
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
-
+// Table Head Component
 function OrderTableHead({ order, orderBy }) {
   return (
     <TableHead>
@@ -115,20 +73,26 @@ function OrderTableHead({ order, orderBy }) {
   );
 }
 
+OrderTableHead.propTypes = {
+  order: PropTypes.string.isRequired,
+  orderBy: PropTypes.string.isRequired
+};
+
+// Status Component
 function OrderStatus({ status }) {
   let color;
   let title;
 
   switch (status) {
-    case 0:
+    case 'Inactive':
       color = 'warning';
       title = 'Pending';
       break;
-    case 1:
+    case 'Active':
       color = 'success';
       title = 'Approved';
       break;
-    case 2:
+    case 'Rejected':
       color = 'error';
       title = 'Rejected';
       break;
@@ -145,9 +109,12 @@ function OrderStatus({ status }) {
   );
 }
 
-// ==============================|| ORDER TABLE ||============================== //
+OrderStatus.propTypes = {
+  status: PropTypes.string.isRequired
+};
 
-export default function OrderTable() {
+// Main Table Component
+export default function OrderTable({ data, onUpdate, onDelete }) {
   const order = 'asc';
   const orderBy = 'id';
 
@@ -166,7 +133,7 @@ export default function OrderTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(data, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
@@ -175,18 +142,34 @@ export default function OrderTable() {
                   role="checkbox"
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   tabIndex={-1}
-                  key={row.tracking_no}
+                  key={row.id}
                 >
                   <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.tracking_no}</Link>
+                    <Link color="secondary"> {row.id}</Link>
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="right">{row.fat}</TableCell>
+                  <TableCell>{row.appName}</TableCell>
+                  <TableCell align="left">{row.appCode}</TableCell>
                   <TableCell>
-                    <OrderStatus status={row.carbs} />
+                    <OrderStatus status={row.appStatus} />
+                  </TableCell>
+                  <TableCell align="left">
+                    {row.appUrl}
                   </TableCell>
                   <TableCell align="right">
-                    <NumericFormat value={row.protein} displayType="text" thousandSeparator prefix="$" />
+                    <IconButton
+                        aria-label="edit"
+                        color="primary"
+                        onClick={() => onUpdate(row.id)}
+                    >
+                        <EditOutlinedIcon />
+                    </IconButton>
+                    <IconButton
+                        aria-label="delete"
+                        color="error"
+                        onClick={() => onDelete(row.id)}
+                    >
+                        <DeleteOutlinedIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               );
@@ -198,6 +181,16 @@ export default function OrderTable() {
   );
 }
 
-OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
-
-OrderStatus.propTypes = { status: PropTypes.number };
+OrderTable.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      appName: PropTypes.string.isRequired,
+      appCode: PropTypes.string.isRequired,
+      appStatus: PropTypes.string.isRequired,
+      appUrl: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired
+};

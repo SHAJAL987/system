@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
@@ -15,7 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import axios from "axios";
+import CryptoJS from 'crypto-js';
 
 // third party
 import * as Yup from 'yup';
@@ -27,20 +25,39 @@ import AnimateButton from 'components/@extended/AnimateButton';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import FirebaseSocial from './FirebaseSocial';
 
-// ============================|| JWT - LOGIN ||============================ //
+// Import the login API URL
+import { login } from '../../../../src/utils/apiList';
 
 export default function AuthLogin({ isDemo = false }) {
-  const [checked, setChecked] = React.useState(false);
-
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  // Encrypt the token before storing it
+  const encryptToken = (token) => {
+    const passphrase = 'middleware'; // Use a secure passphrase or key management solution
+    return CryptoJS.AES.encrypt(token, passphrase).toString();
+  };
+
+  // Decrypt the token when retrieving it
+  const decryptToken = (encryptedToken) => {
+    const passphrase = 'middleware';
+    const bytes = CryptoJS.AES.decrypt(encryptedToken, passphrase);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  };
+
+  // Store token in sessionStorage
+  const storeTokenInSessionStorage = (token) => {
+    const encryptedToken = encryptToken(token);
+    sessionStorage.setItem('authToken', encryptedToken);
   };
 
   return (
@@ -55,6 +72,32 @@ export default function AuthLogin({ isDemo = false }) {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
+        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+          try {
+            const response = await axios.post(login, {
+              mail: values.email,
+              password: values.password
+            });
+
+            if (response.data) {
+              setStatus({ success: true });
+              console.log('Login successful:', response.data);
+
+              if (response.data.token) {
+                storeTokenInSessionStorage(response.data.token);
+                navigate('/home');  // Redirect to the dashboard or another page
+              }
+            }
+
+          } catch (error) {
+            console.error('Login error:', error);
+            setStatus({ success: false });
+            setErrors({ submit: error.response ? error.response.data.message : 'Login failed' });
+          } finally {
+            setSubmitting(false);
+          }
+
+        }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
@@ -86,7 +129,7 @@ export default function AuthLogin({ isDemo = false }) {
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
+                    id="password-login"
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
                     name="password"
@@ -117,18 +160,6 @@ export default function AuthLogin({ isDemo = false }) {
 
               <Grid item xs={12} sx={{ mt: -1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={checked}
-                        onChange={(event) => setChecked(event.target.checked)}
-                        name="checked"
-                        color="primary"
-                        size="small"
-                      />
-                    }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
-                  />
                   <Link variant="h6" component={RouterLink} color="text.primary">
                     Forgot Password?
                   </Link>
@@ -141,18 +172,10 @@ export default function AuthLogin({ isDemo = false }) {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="error">
                     Login
                   </Button>
                 </AnimateButton>
-              </Grid>
-              <Grid item xs={12}>
-                <Divider>
-                  <Typography variant="caption"> Login with</Typography>
-                </Divider>
-              </Grid>
-              <Grid item xs={12}>
-                <FirebaseSocial />
               </Grid>
             </Grid>
           </form>

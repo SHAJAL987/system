@@ -28,7 +28,8 @@ const dashboard = {
       title: 'Application',
       type: 'item',
       url: '/application',
-      icon: icons.DatabaseOutlined
+      icon: icons.DatabaseOutlined,
+      breadcrumbs: false
     }
   ]
 };
