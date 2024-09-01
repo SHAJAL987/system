@@ -20,3 +20,7 @@ export const getTokenFromSessionStorage = () => {
   }
   return null;
 };
+
+export const clearSessionStorage = () => {
+  sessionStorage.clear();
+};

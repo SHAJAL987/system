@@ -17,8 +17,8 @@ export default function Home() {
 
   return (
     <HomeWrapper>
-      <Grid container justifyContent="center" sx={{ marginTop: '5%', marginLeft: '5%', marginRight: '5%' }}>
-        <Grid item xs={12} sm={6} md={4} lg={3} margin={2}>
+      <Grid container justifyContent="center" sx={{ marginTop: '7%', marginLeft: '5%', marginRight: '5%' }}>
+        <div style={{display: 'flex', justifyContent: "center", alignItems: 'center', gap: '20px', width: '100%', flexWrap: "wrap"}}> 
           <AppCard
             title="System Module"
             description="Manage system modules efficiently"
@@ -26,8 +26,6 @@ export default function Home() {
             topBorderImage={cover}
             onClick={() => handleCardClick('System Module')}
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} margin={2}>
           <AppCard
             title="API Monitor"
             description="Monitor API performance"
@@ -35,7 +33,7 @@ export default function Home() {
             topBorderImage={cover}
             onClick={() => handleCardClick('API Monitor')}
           />
-        </Grid>
+        </div>
       </Grid>
     </HomeWrapper>
   );

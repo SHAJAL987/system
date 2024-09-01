@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import List from '@mui/material/List';
@@ -21,6 +22,13 @@ export default function ProfileTab() {
 
   const handleListItemClick = (index) => {
     setSelectedIndex(index);
+  };
+
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    sessionStorage.clear();
+    navigate('/login');
   };
 
   return (
@@ -54,7 +62,7 @@ export default function ProfileTab() {
         <ListItemIcon>
           <LogoutOutlined />
         </ListItemIcon>
-        <ListItemText primary="Logout" />
+        <ListItemText primary="Logout" onClick={handleClick}/>
       </ListItemButton>
     </List>
   );

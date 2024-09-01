@@ -47,7 +47,8 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: 'id', align: 'left', disablePadding: false, label: 'ID' },
   { id: 'appName', align: 'left', disablePadding: true, label: 'Name' },
-  { id: 'appCode', align: 'left', disablePadding: false, label: 'Code' },
+  // { id: 'appCode', align: 'left', disablePadding: false, label: 'Code' },
+  { id: 'appDesc', align: 'left', disablePadding: false, label: 'Description' },
   { id: 'appStatus', align: 'left', disablePadding: false, label: 'Status' },
   { id: 'appUrl', align: 'left', disablePadding: false, label: 'URL' },
   { id: 'action', align: 'right', disablePadding: false, label: 'Action' }
@@ -90,7 +91,7 @@ function OrderStatus({ status }) {
       break;
     case 'Active':
       color = 'success';
-      title = 'Approved';
+      title = 'Active';
       break;
     case 'Rejected':
       color = 'error';
@@ -148,7 +149,8 @@ export default function OrderTable({ data, onUpdate, onDelete }) {
                     <Link color="secondary"> {row.id}</Link>
                   </TableCell>
                   <TableCell>{row.appName}</TableCell>
-                  <TableCell align="left">{row.appCode}</TableCell>
+                  {/* <TableCell align="left">{row.appCode}</TableCell> */}
+                  <TableCell align="left">{row.appDesc}</TableCell>
                   <TableCell>
                     <OrderStatus status={row.appStatus} />
                   </TableCell>
@@ -186,7 +188,8 @@ OrderTable.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       appName: PropTypes.string.isRequired,
-      appCode: PropTypes.string.isRequired,
+      // appCode: PropTypes.string.isRequired,
+      appDesc: PropTypes.string.isRequired,
       appStatus: PropTypes.string.isRequired,
       appUrl: PropTypes.string.isRequired
     })

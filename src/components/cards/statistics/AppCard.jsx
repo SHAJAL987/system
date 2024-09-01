@@ -13,7 +13,7 @@ export default function AppCard({
   return (
     <Card
       sx={{
-        width: 300,
+        width: '22%',
         height: 200,
         display: 'flex',
         flexDirection: 'column',

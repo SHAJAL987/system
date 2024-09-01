@@ -29,6 +29,8 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useNavigate } from 'react-router-dom';
+import { clearSessionStorage } from 'utils/tokenUtils';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -72,6 +74,13 @@ export default function Profile() {
 
   const iconBackColorOpen = 'grey.100';
 
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    sessionStorage.clear();
+    navigate('/login');
+  };
+
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <ButtonBase
@@ -91,7 +100,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+            Shajal
           </Typography>
         </Stack>
       </ButtonBase>
@@ -124,9 +133,9 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">John Doe</Typography>
+                            <Typography variant="h6">Shajal</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                             Middleware Exp
                             </Typography>
                           </Stack>
                         </Stack>
@@ -134,7 +143,9 @@ export default function Profile() {
                       <Grid item>
                         <Tooltip title="Logout">
                           <IconButton size="large" sx={{ color: 'text.primary' }}>
-                            <LogoutOutlined />
+                            <LogoutOutlined 
+                              onClick={handleClick}
+                            />
                           </IconButton>
                         </Tooltip>
                       </Grid>
